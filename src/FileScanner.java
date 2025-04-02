@@ -1,5 +1,8 @@
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.RecursiveTask;
+import java.util.stream.Stream;
+
 
 public class FileScanner extends RecursiveTask<FileStatistics> {
     private final File directory;
@@ -10,42 +13,67 @@ public class FileScanner extends RecursiveTask<FileStatistics> {
 
     @Override
     protected FileStatistics compute() {
-        FileStatistics stats = new FileStatistics();
-        File[] files = directory.listFiles();
-
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    FileScanner task = new FileScanner(file);
-                    task.fork();
-                    stats.add(task.join());
-                } else {
-                    stats.addFile(file.length());
-                }
-            }
+        if (isCancelled() || Thread.currentThread().isInterrupted()) {
+            return new FileStatistics();
         }
+
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return new FileStatistics();
+        }
+
+        Stream<File> fileStream = Arrays.stream(files);
+        FileStatistics stats = fileStream.map(file -> {
+            if (file.isDirectory()) {
+                return forkTask(file);
+            } else {
+                return createFileStatistics(file);
+            }
+        }).reduce(new FileStatistics(), FileStatistics::add);
+        stats = stats.addFolder();
         return stats;
+    }
+
+    private FileStatistics forkTask(File file) {
+        FileScanner task = new FileScanner(file);
+        task.fork();
+        return task.join();
+    }
+
+    private FileStatistics createFileStatistics(File file) {
+        return new FileStatistics(1, 0, file.length());
     }
 }
 
 class FileStatistics {
-    private int fileCount;
-    private int folderCount;
-    private long totalSize;
+    private final int fileCount;
+    private final int folderCount;
+    private final long totalSize;
 
-    public synchronized void add(FileStatistics other) {
-        this.fileCount += other.fileCount;
-        this.folderCount += other.folderCount;
-        this.totalSize += other.totalSize;
+    public FileStatistics() {
+        this(0, 0, 0);
     }
 
-    public synchronized void addFile(long size) {
-        this.fileCount++;
-        this.totalSize += size;
+    public FileStatistics(int fileCount, int folderCount, long totalSize) {
+        this.fileCount = fileCount;
+        this.folderCount = folderCount;
+        this.totalSize = totalSize;
     }
 
-    public synchronized void addFolder() {
-        this.folderCount++;
+    public FileStatistics add(FileStatistics other) {
+        return new FileStatistics(
+                this.fileCount + other.fileCount,
+                this.folderCount + other.folderCount,
+                this.totalSize + other.totalSize
+        );
+    }
+
+    public FileStatistics addFile(long size) {
+        return new FileStatistics(this.fileCount + 1, this.folderCount, this.totalSize + size);
+    }
+
+    public FileStatistics addFolder() {
+        return new FileStatistics(this.fileCount, this.folderCount + 1, this.totalSize);
     }
 
     @Override
