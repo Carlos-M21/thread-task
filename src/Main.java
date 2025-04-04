@@ -1,3 +1,5 @@
+import producerConsumer.BlockingQueueSolution;
+import producerConsumer.Semaphore;
 import salarySociety.EmployeeService;
 
 import java.io.File;
@@ -14,6 +16,10 @@ public class Main {
         //scanTask();
         // Third task
         fetchAndPrintHiredEmployeesWithSalariesTask();
+        // Fourth task Semaphore Solution
+        producerConsumerSemaphoreTask();
+        // Fourth task BlockingQueue Solution
+        producerConsumerBlockingQueueTask();
     }
 
     private static void sortTask(){
@@ -42,5 +48,45 @@ public class Main {
 
         EmployeeService employeeService = new EmployeeService();
         employeeService.fetchAndPrintHiredEmployeesWithSalaries(numberOfEmployees).toCompletableFuture().join();
+    }
+
+    private static void producerConsumerSemaphoreTask() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the duration (in seconds) for the Semaphore-based producer-consumer task:");
+        long durationSeconds = scanner.nextLong();
+        System.out.println("Starting Producer-Consumer using Semaphore for " + durationSeconds + " seconds...");
+        Semaphore pc = new Semaphore(durationSeconds);
+        Thread producer = new Thread(pc.createProducer());
+        Thread consumer = new Thread(pc.createConsumer());
+
+        producer.start();
+        consumer.start();
+
+        try {
+            producer.join();
+            consumer.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private static void producerConsumerBlockingQueueTask() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the duration (in seconds) for the BlockingQueue-based producer-consumer task:");
+        long durationSeconds = scanner.nextLong();
+        System.out.println("Starting Producer-Consumer using BlockingQueue for " + durationSeconds + " seconds...");
+        BlockingQueueSolution pc = new BlockingQueueSolution(durationSeconds);
+        Thread producer = new Thread(pc.createProducer());
+        Thread consumer = new Thread(pc.createConsumer());
+
+        producer.start();
+        consumer.start();
+
+        try {
+            producer.join();
+            consumer.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
