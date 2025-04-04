@@ -10,15 +10,15 @@ import static util.HelperMethods.scanDirectory;
 
 public class Main {
     public static void main(String[] args) {
-        // First task
-        sortTask();
         // Second task
-        //scanTask();
+        sortTask();
         // Third task
+        //scanTask();
+        // Fourth task
         fetchAndPrintHiredEmployeesWithSalariesTask();
-        // Fourth task Semaphore Solution
+        // Fifth task Semaphore Solution
         producerConsumerSemaphoreTask();
-        // Fourth task BlockingQueue Solution
+        // Fifth task BlockingQueue Solution
         producerConsumerBlockingQueueTask();
     }
 
