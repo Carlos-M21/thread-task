@@ -1,4 +1,4 @@
-package salarySociety;
+package main.salarySociety;
 
 public class Employee {
     private String id;

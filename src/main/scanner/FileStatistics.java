@@ -1,4 +1,4 @@
-package scanner;
+package main.scanner;
 
 public class FileStatistics {
     private final int fileCount;

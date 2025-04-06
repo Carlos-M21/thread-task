@@ -1,4 +1,4 @@
-package producerConsumer;
+package main.producerConsumer;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

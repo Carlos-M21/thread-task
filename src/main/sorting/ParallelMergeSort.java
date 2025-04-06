@@ -1,4 +1,4 @@
-package sorting;
+package main.sorting;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -21,7 +21,7 @@ public class ParallelMergeSort extends RecursiveTask<int[]> {
         this.array = array;
         this.end = array.length;
         this.start = 0;
-        this.threshold = calculateThreshold(size); // avoid heap errors or bad sorting
+        this.threshold = calculateThreshold(size); // avoid heap errors or bad main.sorting
     }
 
     @Override

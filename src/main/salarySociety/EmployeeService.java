@@ -1,4 +1,4 @@
-package salarySociety;
+package main.salarySociety;
 
 import java.util.ArrayList;
 import java.util.List;

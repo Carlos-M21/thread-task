@@ -1,9 +1,10 @@
-package util;
+package main.util;
 
-import scanner.FileScanner;
-import scanner.FileStatistics;
+import main.scanner.FileScanner;
+import main.scanner.FileStatistics;
 
 import java.io.File;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
@@ -63,5 +64,15 @@ public class HelperMethods {
         Thread inputThread = new Thread(inputRunnable);
         inputThread.start();
         return inputThread;
+    }
+
+    public static double[] createArray(int length) {
+        double[] array = new double[length];
+        Random random = new Random();
+
+        for (int i = 0; i < length; i++) {
+            array[i] = 1 + random.nextInt(199);
+        }
+        return array;
     }
 }
